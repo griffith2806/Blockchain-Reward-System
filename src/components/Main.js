@@ -50,7 +50,7 @@ class Main extends Component {
                                                 name={company.id}
                                                 value={company.price}
                                                 onClick={(event) => {
-                                                    this.props
+                                                    this.props.purchaseProduct(event.target.name, event.target.value)
                                                 }}
                                             >
                                                 View
