@@ -1,31 +1,38 @@
 pragma solidity ^0.5.0;
 
+
 contract Marketplace {
     string public name;
-    uint public companyCount = 0;
-    mapping(uint => Company) public companies;
+    uint256 public companyCount = 0;
+    uint256 public productCount = 0;
+    mapping(uint256 => Company) public companies;
+    mapping(uint256 => Product) public products;
 
     struct Company {
-        uint id;
+        uint256 id;
         string name;
         address payable owner;
     }
 
-    event CompanyCreated(
-        uint id,
-        string name,
-        address payable owner
-    );
+    event CompanyCreated(uint256 id, string name, address payable owner);
 
-    // event ProductPurchased(
-    // uint id,
-    // string name,
-    // uint price,
-    // address payable owner,
-    // bool purchased
-    // );
+    struct Credit {
+        uint256 id;
+        string productName;
+        uint256 reward;
+        // address payable owner;
+        bool purchased;
+    }
 
-    constructor() public{
+    struct Product {
+        uint256 id;
+        uint256 price;
+        bool purchased;
+    }
+
+    event ProductPurchased(uint256 id, uint256 price, bool purchased);
+
+    constructor() public {
         name = "DeeGee";
     }
 
@@ -35,14 +42,21 @@ contract Marketplace {
         // Require a valid price
         // require(_price > 0);
         // Increment product count
-        companyCount ++;
+        companyCount++;
         // Create the product
         companies[companyCount] = Company(companyCount, _name, msg.sender);
         // Trigger an event
         emit CompanyCreated(companyCount, _name, msg.sender);
     }
 
-    // function purchaseProduct(uint _id) public payable {
+    function createPurchase(address _seller) public payable {
+        address payable seller = address(uint160(_seller));
+        address(seller).transfer(msg.value);
+        productCount++;
+        emit ProductPurchased(productCount, msg.value, true);
+    }
+
+    // function purchaseProduct(uint256 _id) public payable {
     //     // Fetch the product
     //     Product memory _product = products[_id];
     //     // Fetch the owner
@@ -64,6 +78,12 @@ contract Marketplace {
     //     // Pay the seller by sending them Ether
     //     address(_seller).transfer(msg.value);
     //     // Trigger an event
-    //     emit ProductPurchased(productCount, _product.name, _product.price, msg.sender, true);
+    //     emit ProductPurchased(
+    //         productCount,
+    //         _product.name,
+    //         _product.price,
+    //         msg.sender,
+    //         true
+    //     );
     // }
 }

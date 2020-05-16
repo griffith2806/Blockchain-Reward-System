@@ -50,13 +50,13 @@ class App extends Component {
     }
   }
 
-  // purchasecompany(id, price) {
-  //   this.setState({ loading: true })
-  //   this.state.marketplace.methods.purchasecompany(id).send({ from: this.state.account, value: price })
-  //     .once('receipt', (receipt) => {
-  //       this.setState({ loading: false })
-  //     })
-  // }
+  purchaseProduct(id, price) {
+    this.setState({ loading: true })
+    this.state.marketplace.methods.purchasecompany(id).send({ from: this.state.account, value: price })
+      .once('receipt', (receipt) => {
+        this.setState({ loading: false })
+      })
+  }
 
   constructor(props) {
     super(props)
@@ -68,19 +68,75 @@ class App extends Component {
     }
 
     this.createCompany = this.createCompany.bind(this)
-    // this.purchasecompany = this.purchasecompany.bind(this)
+    this.purchaseProduct = this.purchaseProduct.bind(this)
   }
 
   createCompany(name) {
-    this.setState({ loading: true })
+    // this.setState({ loading: true })
     this.state.marketplace.methods.createCompany(name).send({ from: this.state.account })
       .once('receipt', (receipt) => {
         this.setState({ loading: false })
       });
+      alert('Company is being added to the blockcahin. Please refresh your page after the transaction has been completed in metamask')
   }
 
-  viewCompany(){
+
+  // ****Needs to redirect to view company 
+  viewCompany() {
     this.setState.methods.window.alert('khkh');
+  }
+
+  //**********Ensure to replace with seller address************
+  purchaseProduct(price) {
+    // *********Replace with seller address********
+    const web3 = window.web3
+      web3.eth.sendTransaction({
+        // *********Replace with seller address********
+        to: '0x1a2B28C491c11438D1f51ffb29E0351f559937D5',
+        from: this.state.account,
+        value: web3.utils.toWei(price, 'ether'),
+        gas: 21000,
+        gasPrice: web3.utils.toWei('2', 'gwei')
+      })
+  }
+
+  async redeem(amount) {
+    let web3 = new Web3(window.web3.currentProvider);
+    const accounts = await web3.eth.getAccounts()
+    //************Ensure to replace seller address */
+    const sellerAddress = '0x1a2B28C491c11438D1f51ffb29E0351f559937D5'
+
+    if (accounts[0] != sellerAddress) {
+      web3.eth.sendTransaction({
+        to: sellerAddress,
+        from: accounts[0],
+        value: web3.utils.toWei(amount, 'ether'),
+        gas: 1000000,
+        gasPrice: web3.utils.toWei('2', 'gwei')
+      })
+    }
+    else {
+      alert('You cannot buy from the seller address')
+    }
+  }
+
+  async transfer(toAddress, amount) {
+    let web3 = new Web3(window.web3.currentProvider);
+    const accounts = await web3.eth.getAccounts()
+    const currentAddress = accounts[0]
+
+    if (currentAddress != toAddress) {
+      web3.eth.sendTransaction({
+        to: toAddress,
+        from: accounts[0],
+        value: web3.utils.toWei(amount, 'ether'),
+        gas: 1000000,
+        gasPrice: web3.utils.toWei('2', 'gwei')
+      })
+    }
+    else {
+      alert('You cannot send to your own address')
+    }
   }
 
   render() {
@@ -100,6 +156,48 @@ class App extends Component {
               }
             </main>
           </div>
+        </div>
+        <div style={{marginTop: "100px"}}>
+          <h2>Purchase Products</h2>
+          <button onClick={() => this.purchaseProduct('25')} className="btn btn-primary" style={{marginBottom: "10px"}}>Product A(25 Credits)</button><br></br>
+          <button onClick={() => this.purchaseProduct('50')} className="btn btn-primary" style={{marginBottom: "10px"}}>Product B(50 Credits)</button><br></br>
+          <button onClick={() => this.purchaseProduct('100')} className="btn btn-primary" style={{marginBottom: "10px"}}>Product C(100 Credits)</button><br></br>
+        </div>
+        <div style={{marginTop: "100px"}}>
+          <h2>Transfer Points</h2>
+          <form onSubmit={(event) => {
+            event.preventDefault()
+            const address = this.address.value
+            const amount = this.amount.value
+            // const price = window.web3.utils.toWei(this.companyPrice.value.toString(), 'Ether')
+            this.transfer(address, amount)
+          }}>
+            <div className="form-group mr-sm-2" style={{width: "400px"}}>
+              <input
+                id="address"
+                type="text"
+                ref={(input) => { this.address = input }}
+                className="form-control"
+                placeholder="To Adress"
+                required />
+              <input
+                id="amount"
+                type="number"
+                ref={(input) => { this.amount = input }}
+                className="form-control"
+                placeholder="Amount"
+                required
+              />
+            </div>
+            <button type="submit" className="btn btn-primary">Send</button>
+          </form>
+          <p> </p>
+        </div>
+        <div style={{marginTop: "100px", marginBottom: "100px"}}>
+          <h2>Redeem Points</h2>
+          <button onClick={() => this.redeem('25')} className="btn btn-primary" style={{marginBottom: "10px"}}>Product A(25 Credits)</button><br></br>
+          <button onClick={() => this.redeem('50')} className="btn btn-primary" style={{marginBottom: "10px"}}>Product B(50 Credits)</button><br></br>
+          <button onClick={() => this.redeem('100')} className="btn btn-primary" style={{marginBottom: "10px"}}>Product C(100 Credits)</button><br></br>
         </div>
       </div>
     );

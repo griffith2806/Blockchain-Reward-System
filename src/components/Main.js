@@ -20,7 +20,7 @@ class Main extends Component {
                             type="text"
                             ref={(input) => { this.companyName = input }}
                             className="form-control"
-                            placeholder="company Name"
+                            placeholder="Company Name"
                             required />
                     </div>
                     <button type="submit" className="btn btn-primary">Add Company</button>
